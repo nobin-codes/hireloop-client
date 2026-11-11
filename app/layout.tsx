@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono, Manrope, Space_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -12,6 +12,17 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope-sans",
+})
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-mono-sans",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +32,14 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        manrope.variable,
+        spaceMono.variable,
+        "font-sans",
+        geist.variable
+      )}
     >
       <body>
         <ThemeProvider>

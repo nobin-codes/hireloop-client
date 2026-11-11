@@ -7,6 +7,8 @@
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
+    --font-manrope: var(--font-manrope-sans);
+    --font-space-mono: var(--font-space-mono-sans);
     /* HireLoop brand + navbar surfaces (from the design file) */
     --color-brand: #5c53fe;
     --color-brand-muted: #645bff;
@@ -90,37 +92,37 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: #010103;
+    --foreground: #ededef;
+    --card: #141418;
+    --card-foreground: #ededef;
+    --popover: #141418;
+    --popover-foreground: #ededef;
+    --primary: #5c53fe;
+    --primary-foreground: #ededef;
+    --secondary: #1a1a1f;
+    --secondary-foreground: #ededef;
+    --muted: #1a1a1f;
+    --muted-foreground: #a0a0ab;
+    --accent: #1a1a1f;
+    --accent-foreground: #ededef;
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --border: rgb(255 255 255 / 10%);
+    --input: rgb(255 255 255 / 15%);
+    --ring: #5c53fe;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --sidebar: #141418;
+    --sidebar-foreground: #ededef;
+    --sidebar-primary: #5c53fe;
+    --sidebar-primary-foreground: #ededef;
+    --sidebar-accent: #1a1a1f;
+    --sidebar-accent-foreground: #ededef;
+    --sidebar-border: rgb(255 255 255 / 10%);
+    --sidebar-ring: #5c53fe;
 }
 
 @layer base {
