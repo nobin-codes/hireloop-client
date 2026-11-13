@@ -1,8 +1,10 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
-const client = new MongoClient("mongodb://localhost:27017/database");
-const db = client.db('hireloopdb');
+const client = new MongoClient(process.env.BETTER_AUTH_DB_URI as string);
+// Must match the database that already holds the better-auth collections
+// (user, session, account, verification).
+const db = client.db('better-auth-db');
 
 export const auth = betterAuth({
 
