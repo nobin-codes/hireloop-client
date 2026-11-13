@@ -4,7 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { MenuIcon } from "lucide-react"
+import { MenuIcon, LogOut } from "lucide-react"
 
 import logo from "@/app/image/logo.png"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -17,6 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { authClient, useSession } from "@/lib/auth-client"
 
 const navLinks = [
   { label: "Browse Jobs", href: "/jobs" },
@@ -48,6 +49,29 @@ function Logo({ className }: { className?: string }) {
 export function SiteNavbar() {
   const pathname = usePathname()
   const [open, setOpen] = React.useState(false)
+  const [signingOut, setSigningOut] = React.useState(false)
+  const { data: session, isPending } = useSession()
+
+  const displayName =
+    session?.user?.name?.trim() ||
+    session?.user?.email?.split("@")[0] ||
+    "friend"
+
+  async function handleSignOut() {
+    if (signingOut) return
+
+    setSigningOut(true)
+
+    try {
+      const { error } = await authClient.signOut()
+
+      if (!error) {
+        setOpen(false)
+      }
+    } finally {
+      setSigningOut(false)
+    }
+  }
 
   return (
     <header className="w-full px-4 pt-4 sm:px-6 lg:px-10">
@@ -83,24 +107,52 @@ export function SiteNavbar() {
           <span aria-hidden className="h-6 w-px shrink-0 bg-[#a8a8a8]/40" />
 
           <div className="flex items-center gap-4">
-            <Link
-              href="/sign-in"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "h-9 px-4 text-base font-semibold text-brand-muted hover:bg-white/5 hover:text-brand"
-              )}
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/sign-up"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "h-[52px] rounded-[8px] bg-brand px-5 text-base font-medium text-nav-foreground shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#6b63ff]"
-              )}
-            >
-              Get Started
-            </Link>
+            {isPending ? (
+              <div
+                aria-hidden
+                className="h-9 w-[188px] animate-pulse rounded-lg bg-white/[0.05]"
+              />
+            ) : session?.user ? (
+              <div className="flex items-center gap-3 pr-2">
+                <p className="text-sm text-nav-muted">
+                  Welcome,{" "}
+                  <span className="text-base font-semibold text-white">
+                    {displayName}
+                  </span>
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  className="h-9 gap-1.5 rounded-lg border border-white/10 px-3 text-sm font-medium text-nav-muted hover:bg-white/5 hover:text-white"
+                >
+                  <LogOut aria-hidden className="size-4" />
+                  {signingOut ? "Signing out…" : "Sign out"}
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "sm" }),
+                    "h-9 px-4 text-base font-semibold text-brand-muted hover:bg-white/5 hover:text-brand"
+                  )}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "h-[52px] rounded-[8px] bg-brand px-5 text-base font-medium text-nav-foreground shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#6b63ff]"
+                  )}
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 
@@ -153,26 +205,54 @@ export function SiteNavbar() {
             </nav>
 
             <div className="mt-auto flex flex-col gap-2 border-t border-white/[0.07] p-5">
-              <Link
-                href="/sign-in"
-                onClick={() => setOpen(false)}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-11 w-full border-white/10 bg-transparent text-brand-muted hover:bg-white/5 hover:text-brand"
-                )}
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/sign-up"
-                onClick={() => setOpen(false)}
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "h-11 w-full rounded-[8px] bg-brand text-base font-medium text-nav-foreground shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#6b63ff]"
-                )}
-              >
-                Get Started
-              </Link>
+              {isPending ? (
+                <div
+                  aria-hidden
+                  className="h-11 animate-pulse rounded-lg bg-white/[0.05]"
+                />
+              ) : session?.user ? (
+                <>
+                  <p className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-nav-muted">
+                    Welcome,{" "}
+                    <span className="font-semibold text-white">
+                      {displayName}
+                    </span>
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={handleSignOut}
+                    disabled={signingOut}
+                    className="h-11 w-full gap-2 rounded-[8px] border-white/10 bg-transparent text-base text-nav-muted hover:bg-white/5 hover:text-white"
+                  >
+                    <LogOut aria-hidden className="size-4" />
+                    {signingOut ? "Signing out…" : "Sign out"}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/sign-in"
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "lg" }),
+                      "h-11 w-full border-white/10 bg-transparent text-brand-muted hover:bg-white/5 hover:text-brand"
+                    )}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      buttonVariants({ size: "lg" }),
+                      "h-11 w-full rounded-[8px] bg-brand text-base font-medium text-nav-foreground shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#6b63ff]"
+                    )}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </SheetContent>
         </Sheet>

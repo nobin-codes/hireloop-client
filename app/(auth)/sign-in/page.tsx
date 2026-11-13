@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { AlertCircle, Loader2 } from "lucide-react"
 
 import { AuthField } from "@/components/auth/auth-field"
 import { Button } from "@/components/ui/button"
@@ -13,9 +14,9 @@ type SignInFormData = {
 }
 
 export default function SignInPage() {
+  const router = useRouter()
   const [pending, setPending] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
-  const [signedInEmail, setSignedInEmail] = React.useState<string | null>(null)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -28,7 +29,6 @@ export default function SignInPage() {
     }
 
     setError(null)
-    setSignedInEmail(null)
     setPending(true)
 
     try {
@@ -55,8 +55,9 @@ export default function SignInPage() {
         return
       }
 
-      form.reset()
-      setSignedInEmail(data.email)
+      // Signed in — go to the homepage.
+      router.replace("/")
+      router.refresh()
     } catch {
       setError("Something went wrong. Check your connection and try again.")
     } finally {
@@ -121,19 +122,6 @@ export default function SignInPage() {
           )}
         </Button>
       </form>
-
-      {signedInEmail ? (
-        <p
-          role="status"
-          className="mt-5 flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-sm leading-[1.5] text-emerald-100"
-        >
-          <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0" />
-          <span>
-            Signed in as{" "}
-            <span className="font-medium text-white">{signedInEmail}</span>.
-          </span>
-        </p>
-      ) : null}
     </div>
   )
 }
