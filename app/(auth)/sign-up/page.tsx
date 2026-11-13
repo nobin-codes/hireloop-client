@@ -4,6 +4,7 @@ import * as React from "react"
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
 
 import { AuthField } from "@/components/auth/auth-field"
+import { RoleField, userRoles, type UserRole } from "@/components/auth/role-field"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 
@@ -11,26 +12,33 @@ type SignUpFormData = {
   name: string
   email: string
   password: string
+  role: UserRole
 }
 
 export default function SignUpPage() {
   const [pending, setPending] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
-  const [createdEmail, setCreatedEmail] = React.useState<string | null>(null)
+  const [created, setCreated] = React.useState<SignUpFormData | null>(null)
+  // Bump to remount the form (clears inputs and resets the role choice).
+  const [formKey, setFormKey] = React.useState(0)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const form = event.currentTarget
     const formData = new FormData(form)
+    const roleValue = String(formData.get("role") ?? "seeker")
     const data: SignUpFormData = {
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
       password: String(formData.get("password") ?? ""),
+      role: userRoles.some((role) => role.value === roleValue)
+        ? (roleValue as UserRole)
+        : "seeker",
     }
 
     setError(null)
-    setCreatedEmail(null)
+    setCreated(null)
     setPending(true)
 
     try {
@@ -55,7 +63,8 @@ export default function SignUpPage() {
       }
 
       form.reset()
-      setCreatedEmail(data.email)
+      setFormKey((key) => key + 1)
+      setCreated(data)
     } catch {
       setError("Something went wrong. Check your connection and try again.")
     } finally {
@@ -74,7 +83,7 @@ export default function SignUpPage() {
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form key={formKey} onSubmit={handleSubmit} className="flex flex-col gap-5">
         {error ? (
           <div
             role="alert"
@@ -94,6 +103,8 @@ export default function SignUpPage() {
           autoComplete="name"
           required
         />
+
+        <RoleField />
 
         <AuthField
           id="email"
@@ -132,7 +143,7 @@ export default function SignUpPage() {
         </Button>
       </form>
 
-      {createdEmail ? (
+      {created ? (
         <p
           role="status"
           className="mt-5 flex items-start gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-sm leading-[1.5] text-emerald-100"
@@ -140,8 +151,11 @@ export default function SignUpPage() {
           <CheckCircle2 aria-hidden className="mt-0.5 size-4 shrink-0" />
           <span>
             Account created for{" "}
-            <span className="font-medium text-white">{createdEmail}</span>.
-            You&apos;re signed in.
+            <span className="font-medium text-white">{created.email}</span> (
+            <span className="font-medium text-white">
+              {userRoles.find((role) => role.value === created.role)?.label}
+            </span>
+            ). You&apos;re signed in.
           </span>
         </p>
       ) : null}
